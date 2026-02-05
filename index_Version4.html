@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Clasificación de Plásticos y Contaminación Ambiental</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f6f5;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    input { display: none; }
+
+    /* PORTAL */
+    .portal {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #1b5e20, #66bb6a);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px;
+      z-index: 10;
+    }
+
+    .portal h1 { font-size: 2.2rem; }
+    .portal p { max-width: 700px; }
+
+    .boton {
+      background: white;
+      color: #1b5e20;
+      padding: 14px 32px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    #entrar:checked ~ .portal { display: none; }
+
+    /* CONTENIDO */
+    .contenido {
+      max-width: 900px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    h1, h2, h3 { color: #1b5e20; }
+
+    .filtros {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .filtros label {
+      background: #ddd;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #todos:checked ~ .contenido label[for="todos"],
+    #alta:checked  ~ .contenido label[for="alta"],
+    #media:checked ~ .contenido label[for="media"],
+    #baja:checked  ~ .contenido label[for="baja"] {
+      background: #1b5e20;
+      color: white;
+    }
+
+    .plastico {
+      background: white;
+      padding: 16px;
+      margin: 12px 0;
+      border-left: 8px solid gray;
+      border-radius: 6px;
+    }
+
+    .alta  { border-color: #c62828; }
+    .media { border-color: #ef6c00; }
+    .baja  { border-color: #2e7d32; }
+
+    #alta:checked  ~ .contenido .plastico:not(.alta),
+    #media:checked ~ .contenido .plastico:not(.media),
+    #baja:checked  ~ .contenido .plastico:not(.baja) {
+      display: none;
+    }
+
+    #todos:checked ~ .contenido .plastico { display: block; }
+  </style>
+</head>
+
+<body>
+
+<input type="checkbox" id="entrar">
+
+<div class="portal">
+  <h1>Clasificación de Plásticos</h1>
+  <p>
+    Proyecto informativo sobre los distintos tipos de plásticos, su persistencia
+    ambiental y su contribución a la contaminación global y la generación de microplásticos.
+  </p>
+  <label for="entrar" class="boton">Acceder al estudio</label>
+</div>
+
+<input type="radio" name="filtro" id="todos" checked>
+<input type="radio" name="filtro" id="alta">
+<input type="radio" name="filtro" id="media">
+<input type="radio" name="filtro" id="baja">
+
+<div class="contenido">
+
+<h1>Introducción</h1>
+<p>
+Los plásticos sintéticos constituyen uno de los materiales más utilizados en la sociedad moderna.
+Su resistencia química y durabilidad, propiedades deseables desde el punto de vista industrial,
+representan un problema crítico cuando se liberan al ambiente.
+</p>
+
+<h2>Filtrar por nivel de impacto ambiental</h2>
+<div class="filtros">
+  <label for="todos">Todos</label>
+  <label for="alta">Alta</label>
+  <label for="media">Media</label>
+  <label for="baja">Baja</label>
+</div>
+
+<div class="plastico alta">
+  <h3>PET (1) – Polietileno tereftalato</h3>
+  <p><strong>Uso:</strong> Botellas y envases de bebidas.</p>
+  <p><strong>Degradación:</strong> ~450 años.</p>
+  <p>
+    Alta presencia en residuos marinos. Su fragmentación genera microplásticos
+    que ingresan a cadenas tróficas acuáticas.
+  </p>
+</div>
+
+<div class="plastico media">
+  <h3>HDPE (2) – Polietileno de alta densidad</h3>
+  <p><strong>Uso:</strong> Envases de productos químicos y alimenticios.</p>
+  <p><strong>Degradación:</strong> ~100–200 años.</p>
+  <p>
+    Presenta buena reciclabilidad, aunque su acumulación sigue siendo significativa.
+  </p>
+</div>
+
+<div class="plastico alta">
+  <h3>PVC (3) – Policloruro de vinilo</h3>
+  <p><strong>Uso:</strong> Caños, cables, construcción.</p>
+  <p>
+    Libera compuestos tóxicos durante su degradación. Considerado uno de los plásticos
+    más problemáticos ambientalmente.
+  </p>
+</div>
+
+<div class="plastico baja">
+  <h3>PP (5) – Polipropileno</h3>
+  <p><strong>Uso:</strong> Envases reutilizables y tapas.</p>
+  <p>
+    Menor impacto relativo y buena resistencia térmica. Su reciclaje es técnicamente viable.
+  </p>
+</div>
+
+<h2>Microplásticos</h2>
+<p>
+La fragmentación física y fotoquímica de los plásticos da origen a microplásticos
+(&lt;5 mm), detectados actualmente en océanos, suelos, agua potable e incluso en tejidos humanos.
+</p>
+
+<h2>Conclusión</h2>
+<p>
+El estudio del comportamiento ambiental de los plásticos es esencial para el desarrollo
+de nuevas estrategias de mitigación, reciclaje avanzado y sustitución por materiales sostenibles.
+</p>
+
+</div>
+
+</body>
+</html>
+````markdown name=README.md
+# plastico-contaminacion
+
+Página informativa sobre clasificación de plásticos y su impacto ambiental.  
+Diseñada para publicarse con GitHub Pages en la rama `main` (root).
+
+URL esperada tras publicar: `https://tomasblanco12.github.io/plastico-contaminacion/`
