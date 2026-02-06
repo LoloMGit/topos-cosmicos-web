@@ -230,6 +230,15 @@
 </div>
 
 <script>
+  // Función para mostrar/ocultar el cuadro de ayuda
+  function toggleAyuda() {
+    const modal = document.getElementById('modal-ayuda');
+    if (modal.style.display === 'none' || modal.style.display === '') {
+      modal.style.display = 'block';
+    } else {
+      modal.style.display = 'none';
+    }
+  }
   // Constantes de radiación (X0) del documento BL4S
   const MATERIALES = {
     HDPE: { X0: 47.5 }, 
