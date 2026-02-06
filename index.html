@@ -172,17 +172,30 @@
 
   function toggleElemento(id) {
     const el = document.getElementById(id);
-    el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    if(el) el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
   }
 
-  // Esta función SOLO actualiza los numeritos de la fórmula y el índice mientras mueves los sliders
+  // 1. FUNCIÓN DE RESET: Se activa cuando ALGO cambia
+  function resetSimulacion() {
+    // Ocultamos el resultado viejo porque ya no es válido
+    document.getElementById('resultado-box').style.display = 'none';
+    document.getElementById('idx-res').innerText = "---";
+    
+    // Cambiamos el botón para indicar que hay que re-simular
+    const btn = document.querySelector('.btn-simular');
+    btn.innerHTML = "🔄 RECALCULAR SIMULACIÓN";
+    btn.style.background = "#ef6c00"; // Color naranja para llamar la atención
+    
+    actualizarPrevia();
+  }
+
   function actualizarPrevia() {
     const p_MeV = parseFloat(document.getElementById('momento').value) * 1000;
     const x_cm = parseFloat(document.getElementById('espesor').value) / 10;
     const matId = document.getElementById('material').value;
     const mat = MATERIALES[matId];
 
-    // Actualizamos la fórmula visual y el índice (pero NO el resultado final)
+    // Actualizamos la fórmula visual
     document.getElementById('f-p').innerText = Math.round(p_MeV);
     document.getElementById('f-x').innerText = x_cm.toFixed(2);
     document.getElementById('f-X0').innerText = mat.X0;
@@ -190,23 +203,14 @@
     document.getElementById('idx-p').innerText = Math.round(p_MeV);
     document.getElementById('idx-x').innerText = x_cm.toFixed(2);
     document.getElementById('idx-X0').innerText = mat.X0;
-    
-    // Opcional: Podrías poner el índice del resultado en "?" hasta que se pulse el botón
-    document.getElementById('idx-res').innerText = "---";
   }
 
-  // Escuchadores de Sliders: Ahora solo actualizan la "previa"
-  document.getElementById('momento').addEventListener('input', function() {
-    document.getElementById('momento-valor').innerText = this.value;
-    actualizarPrevia();
-  });
+  // Escuchadores: Ahora todos llaman a resetSimulacion
+  document.getElementById('momento').addEventListener('input', resetSimulacion);
+  document.getElementById('espesor').addEventListener('input', resetSimulacion);
+  document.getElementById('material').addEventListener('change', resetSimulacion);
 
-  document.getElementById('espesor').addEventListener('input', function() {
-    document.getElementById('espesor-valor').innerText = this.value;
-    actualizarPrevia();
-  });
-
-  // ESTA ES LA QUE SE ACTIVA AL TOCAR EL BOTÓN
+  // 2. FUNCIÓN DE EJECUCIÓN (Solo al pulsar el botón)
   function correrFisica() {
     const p_GeV = parseFloat(document.getElementById('momento').value);
     const p_MeV = p_GeV * 1000;
@@ -215,18 +219,20 @@
     const matId = document.getElementById('material').value;
     const mat = MATERIALES[matId];
 
-    // Cálculo real de Highland
     const x_sobre_X0 = x_cm / mat.X0;
     const theta_rad = (13.6 / p_MeV) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
     const theta_mrad = (theta_rad * 1000).toFixed(3);
 
-    // Mostramos el resultado final
+    // Mostramos resultado y restauramos el botón original
     document.getElementById('theta-val').innerText = theta_mrad;
     document.getElementById('idx-res').innerText = theta_mrad;
     document.getElementById('resultado-box').style.display = 'block';
+    
+    const btn = document.querySelector('.btn-simular');
+    btn.innerHTML = "▶ EJECUTAR SIMULACIÓN";
+    btn.style.background = "#1b5e20"; // Volver al verde
   }
 
-  // Al cargar, que se prepare la fórmula pero que no se vea el resultado
   window.onload = function() {
     actualizarPrevia();
     document.getElementById('resultado-box').style.display = 'none';
