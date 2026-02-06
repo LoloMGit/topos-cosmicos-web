@@ -1,120 +1,263 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlasticScan - Simulador de Dispersión</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
-        h1 { color: #1b5e20; text-align: center; }
-        .config-box { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 5px solid #1b5e20; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #34495e; margin-top: 10px; }
-        select, input[type="range"] { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        button { width: 100%; padding: 15px; background-color: #1b5e20; color: white; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #2e7d32; }
-        .resultado { background: #e8f6ff; padding: 20px; border-radius: 10px; border-left: 5px solid #1b5e20; text-align: center; }
-        .resultado-numero { font-size: 32px; font-weight: bold; color: #1b5e20; }
-        .diferencia-positiva { color: #e74c3c; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PlasticScan - Clasificación de Plásticos y Simulación CERN</title>
+
+  <style>
+    /* ESTILOS ORIGINALES DE TU COMPAÑERO */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f6f5;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    input[type="checkbox"], input[type="radio"] { display: none; }
+
+    .portal {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #1b5e20, #66bb6a);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px;
+      z-index: 10;
+    }
+
+    .boton-entrar {
+      background: white;
+      color: #1b5e20;
+      padding: 14px 32px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      display: inline-block;
+    }
+
+    #entrar:checked ~ .portal { display: none; }
+
+    .contenido {
+      max-width: 900px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    h1, h2, h3 { color: #1b5e20; }
+
+    /* ESTILOS DEL SIMULADOR (NUEVOS Y AJUSTADOS) */
+    .config-box {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin: 30px 0;
+      border-top: 5px solid #1b5e20;
+    }
+
+    label { font-weight: bold; display: block; margin-top: 15px; }
+    
+    /* Estilo para sliders visibles */
+    input[type="range"] { 
+      display: block; 
+      width: 100%; 
+      margin: 10px 0; 
+      cursor: pointer;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .btn-simular {
+      background: #1b5e20;
+      color: white;
+      border: none;
+      padding: 15px;
+      width: 100%;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1.1rem;
+      margin-top: 20px;
+    }
+
+    #resultado-box {
+      display: none;
+      background: #e8f5e9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+      border: 1px solid #c8e6c9;
+    }
+
+    /* ESTILOS DE FILTROS DE TU COMPAÑERO */
+    .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .filtros label {
+      background: #ddd;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    #todos:checked ~ .contenido label[for="todos"],
+    #alta:checked  ~ .contenido label[for="alta"],
+    #media:checked ~ .contenido label[for="media"],
+    #baja:checked  ~ .contenido label[for="baja"] {
+      background: #1b5e20;
+      color: white;
+    }
+
+    .plastico {
+      background: white;
+      padding: 16px;
+      margin: 12px 0;
+      border-left: 8px solid gray;
+      border-radius: 6px;
+    }
+
+    .alta  { border-color: #c62828; }
+    .media { border-color: #ef6c00; }
+    .baja  { border-color: #2e7d32; }
+
+    #alta:checked  ~ .contenido .plastico:not(.alta),
+    #media:checked ~ .contenido .plastico:not(.media),
+    #baja:checked  ~ .contenido .plastico:not(.baja) {
+      display: none;
+    }
+  </style>
 </head>
+
 <body>
 
-    <h1>🔬 PlasticScan: Simulador de Dispersión</h1>
+<input type="checkbox" id="entrar">
 
-    <div class="config-box">
-        <h2>Configuración del Experimento</h2>
-        
-        <label>Tipo de partícula:</label>
-        <select id="particula">
-            <option value="electron">Electrón</option>
-            <option value="muon">Muón</option>
-        </select>
+<div class="portal">
+  <h1>PlasticScan: Proyecto BL4S</h1>
+  <p>Estudio de clasificación de polímeros mediante dispersión de partículas en el CERN.</p>
+  <label for="entrar" class="boton-entrar">Acceder al estudio</label>
+</div>
 
-        <label>Momento (Energía): <span id="momento-valor">3.0</span> GeV/c</label>
-        <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
+<input type="radio" name="filtro" id="todos" checked>
+<input type="radio" name="filtro" id="alta">
+<input type="radio" name="filtro" id="media">
+<input type="radio" name="filtro" id="baja">
 
-        <label>Tipo de plástico base:</label>
-        <select id="material">
-            <option value="HDPE">HDPE (Polietileno)</option>
-            <option value="PET">PET (Botellas)</option>
-        </select>
+<div class="contenido">
+  
+  <h1>Introducción</h1>
+  <p>Este proyecto busca determinar la pureza de plásticos reciclados utilizando el haz de partículas de una línea de luz (Beamline), analizando cómo se desvían las partículas al atravesar el material.</p>
 
-        <label>Contaminante adicional:</label>
-        <select id="contaminante">
-            <option value="ninguno">Ninguno (Virgen)</option>
-            <option value="PVC">Cloro (PVC)</option>
-        </select>
+  <div class="config-box">
+    <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
+    <p>Ajusta los parámetros para observar el comportamiento físico (Fórmula de Highland).</p>
+    
+    <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
+    <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
 
-        <label>% de Contaminación: <span id="contaminacion-valor">0</span>%</label>
-        <input type="range" id="contaminacion" min="0" max="10" step="0.5" value="0">
+    <label>Material de la muestra:</label>
+    <select id="material">
+      <option value="HDPE">HDPE (Polietileno de Alta Densidad)</option>
+      <option value="PET">PET (Botellas de Plástico)</option>
+      <option value="PVC">PVC (Policloruro de Vinilo)</option>
+    </select>
 
-        <button onclick="simular()">▶ EJECUTAR SIMULACIÓN</button>
+    <label>Espesor de la muestra: <span id="espesor-valor">2.0</span> mm</label>
+    <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
+
+    <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
+
+    <div id="resultado-box">
+      <strong>Ángulo de Dispersión Estimado (θ):</strong><br>
+      <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
     </div>
+  </div>
 
-    <div id="resultados" class="config-box" style="display: none;">
-        <h2>Resultados del Beamline</h2>
-        <div class="resultado">
-            <p>Ángulo de dispersión (θ):</p>
-            <p class="resultado-numero"><span id="theta-resultado">0.00</span> mrad</p>
-        </div>
-        <div id="interpretacion" style="margin-top: 15px; padding: 15px; border-radius: 5px; background: #fff; border: 1px solid #ddd;">
-            </div>
-    </div>
+  <h2>Filtrar Plásticos por Impacto Ambiental</h2>
+  <div class="filtros">
+    <label for="todos">Todos</label>
+    <label for="alta">Alta</label>
+    <label for="media">Media</label>
+    <label for="baja">Baja</label>
+  </div>
 
-    <script>
-        const MATERIALES = {
-            HDPE: { X0: 47.5, density: 0.94, Z_eff: 3.5 },
-            PET: { X0: 28.5, density: 1.38, Z_eff: 4.5 },
-            PVC: { X0: 15.8, density: 1.40, Z_eff: 9.0 }
-        };
+  <div class="plastico alta">
+    <h3>PET (1) – Polietileno tereftalato</h3>
+    <p><strong>Uso:</strong> Botellas y envases. <strong>Degradación:</strong> ~450 años.</p>
+  </div>
 
-        const PARTICULAS = {
-            electron: { masa: 0.511 },
-            muon: { masa: 105.7 }
-        };
+  <div class="plastico media">
+    <h3>HDPE (2) – Polietileno de alta densidad</h3>
+    <p><strong>Uso:</strong> Envases químicos. <strong>Degradación:</strong> ~100–200 años.</p>
+  </div>
 
-        // Actualizar números de los sliders en tiempo real [cite: 195, 197]
-        document.getElementById('momento').addEventListener('input', function() {
-            document.getElementById('momento-valor').textContent = this.value;
-        });
-        document.getElementById('contaminacion').addEventListener('input', function() {
-            document.getElementById('contaminacion-valor').textContent = this.value;
-        });
+  <div class="plastico alta">
+    <h3>PVC (3) – Policloruro de vinilo</h3>
+    <p><strong>Uso:</strong> Construcción. Libera compuestos tóxicos al degradarse.</p>
+  </div>
 
-        function simular() {
-            const momento = parseFloat(document.getElementById('momento').value);
-            const p_MeV = momento * 1000;
-            const x_cm = 0.2; // Espesor 2mm [cite: 144]
-            
-            const matBase = MATERIALES[document.getElementById('material').value];
-            const part = PARTICULAS[document.getElementById('particula').value];
-            const contNombre = document.getElementById('contaminante').value;
-            const porc = parseFloat(document.getElementById('contaminacion').value) / 100;
+  <div class="plastico baja">
+    <h3>PP (5) – Polipropileno</h3>
+    <p><strong>Uso:</strong> Tapas y envases reutilizables. Menor impacto relativo.</p>
+  </div>
 
-            // Lógica de mezcla [cite: 150]
-            let X0_final = matBase.X0;
-            if (contNombre !== 'ninguno' && porc > 0) {
-                const matCont = MATERIALES[contNombre];
-                X0_final = 1 / (porc / matCont.X0 + (1 - porc) / matBase.X0);
-            }
+</div>
 
-            // Fórmula de Highland [cite: 147]
-            const E = Math.sqrt(p_MeV**2 + part.masa**2);
-            const beta = p_MeV / E;
-            const x_sobre_X0 = x_cm / X0_final;
-            const theta = (13.6 / (p_MeV * beta)) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+<script>
+  // Constantes de radiación (X0) del documento BL4S
+  const MATERIALES = {
+    HDPE: { X0: 47.5 }, 
+    PET: { X0: 28.5 },  
+    PVC: { X0: 15.8 }   
+  };
 
-            // Mostrar resultados [cite: 208, 213]
-            document.getElementById('theta-resultado').textContent = (theta * 1000).toFixed(3);
-            document.getElementById('resultados').style.display = 'block';
-            
-            const interp = document.getElementById('interpretacion');
-            if (porc > 0.02) {
-                interp.innerHTML = "⚠️ <b>Nota:</b> La dispersión aumentó debido al contaminante. Esto es detectable por los sensores del CERN.";
-            } else {
-                interp.innerHTML = "✅ <b>Nota:</b> El material se comporta como plástico virgen.";
-            }
-        }
-    </script>
+  // 1. CONEXIÓN DE SLIDERS (Para que los números cambien al moverlos)
+  document.getElementById('momento').addEventListener('input', function() {
+    document.getElementById('momento-valor').innerText = this.value;
+  });
+
+  document.getElementById('espesor').addEventListener('input', function() {
+    document.getElementById('espesor-valor').innerText = this.value;
+  });
+
+  // 2. LÓGICA DE SIMULACIÓN
+  function correrFisica() {
+    const p_GeV = parseFloat(document.getElementById('momento').value);
+    const p_MeV = p_GeV * 1000;
+    const espesor_mm = parseFloat(document.getElementById('espesor').value);
+    const x_cm = espesor_mm / 10;
+    
+    const mat = MATERIALES[document.getElementById('material').value];
+    
+    // Física: Electrón m=0.511 MeV
+    const m = 0.511;
+    const E = Math.sqrt(Math.pow(p_MeV, 2) + Math.pow(m, 2));
+    const beta = p_MeV / E;
+    
+    const x_sobre_X0 = x_cm / mat.X0;
+    
+    // Fórmula de Highland (CERN Standard)
+    const theta_rad = (13.6 / (p_MeV * beta)) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+    
+    // Mostrar resultados
+    document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
+    document.getElementById('resultado-box').style.display = 'block';
+  }
+</script>
+
 </body>
 </html>
