@@ -171,19 +171,50 @@
   <h1>Introducción</h1>
   <p>Este proyecto busca determinar la pureza de plásticos reciclados utilizando el haz de partículas de una línea de luz (Beamline), analizando cómo se desvían las partículas al atravesar el material.</p>
 
- <div class="config-box">
-  <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px;">
-    <button onclick="toggleElemento('modal-ayuda')" style="width: 35px; height: 35px; border-radius: 50%; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer;">?</button>
-    <button onclick="toggleElemento('modal-formula')" style="width: 35px; height: 35px; border-radius: 8px; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer;">f(x)</button>
+<div class="config-box">
+  <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row-reverse; align-items: flex-start; gap: 15px; pointer-events: none;">
+    
+    <div style="display: flex; flex-direction: column; gap: 8px; pointer-events: auto;">
+      <button onclick="toggleElemento('modal-ayuda')" style="width: 35px; height: 35px; border-radius: 50%; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer;">?</button>
+      <button onclick="toggleElemento('modal-formula')" style="width: 35px; height: 35px; border-radius: 8px; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer;">f(x)</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; pointer-events: auto;">
+      
+      <div id="modal-ayuda" class="modal-flotante" style="position: static; width: 280px; background: #f0f4f1; border-color: #2e7d32;">
+        <h4 style="margin:0 0 5px 0;">Guía Física</h4>
+        <p style="font-size: 0.8rem; margin: 0;">
+          La <strong>Dispersión de Coulomb</strong> ocurre cuando partículas interactúan con núcleos. 
+          <br><br>
+          • <b>Momento (p):</b> A mayor energía, menos tiempo de interacción y menor desviación.
+          <br>
+          • <b>X₀:</b> El PVC tiene cloro, lo que reduce su longitud de radiación y <b>aumenta</b> el ángulo θ.
+        </p>
+      </div>
+
+      <div id="modal-formula" class="modal-flotante" style="position: static; width: 300px; text-align: center;">
+        <h4 style="margin:0 0 10px 0; color: #1b5e20;">Ecuación de Highland</h4>
+        <div style="font-family: 'Times New Roman', serif; font-size: 1.1rem; background: #f9f9f9; padding: 10px; border-radius: 5px; border: 1px inset #ddd;">
+          θ ≈ (13.6 / <b id="f-p" style="color: #c62828;">3000</b>) · √(<b id="f-x" style="color: #ef6c00;">0.20</b> / <b id="f-X0" style="color: #1565c0;">47.5</b>)
+        </div>
+        <div style="margin-top: 10px; font-size: 0.7rem; text-align: left; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+          <div><span style="color: #c62828;">■</span> p: <span id="idx-p">3000</span></div>
+          <div><span style="color: #ef6c00;">■</span> x: <span id="idx-x">0.20</span></div>
+          <div><span style="color: #1565c0;">■</span> X₀: <span id="idx-X0">47.5</span></div>
+          <div><span style="color: #666;">■</span> θ: <span id="idx-res">0.00</span></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
   
   <label>Material de la muestra:</label>
   <select id="material" onchange="correrFisica()">
-    <option value="HDPE">HDPE (Polietileno de Alta Densidad)</option>
-    <option value="PET">PET (Botellas de Plástico)</option>
-    <option value="PVC">PVC (Policloruro de Vinilo)</option>
+    <option value="HDPE">HDPE (Alta Densidad)</option>
+    <option value="PET">PET (Botellas)</option>
+    <option value="PVC">PVC (Contaminante)</option>
   </select>
 
   <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
@@ -198,61 +229,6 @@
     <strong>Ángulo de Dispersión Estimado (θ):</strong><br>
     <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
   </div>
-
-  <div id="modal-ayuda" class="modal-flotante" style="top: 15px; left: 15px; max-width: 300px; background: #f0f4f1; border-color: #2e7d32;">
-    <h4 style="margin:0 0 5px 0;">Guía Física</h4>
-    <p style="font-size: 0.8rem; margin: 0;">
-      La <strong>Dispersión Múltiple de Coulomb</strong> ocurre cuando partículas cargadas (como electrones) interactúan con los núcleos del plástico. 
-      <br><br>
-      • <strong>Momento (p):</strong> A mayor velocidad/energía, la partícula "pasa tan rápido" que el núcleo no llega a desviarla mucho.
-      <br>
-      • <strong>Longitud de Radiación (X₀):</strong> Es una propiedad del material. Si el plástico es denso o tiene átomos pesados (como el Cloro en el PVC), la X₀ es pequeña y la desviación es <strong>grande</strong>.
-    </p>
-  </div>
-
-  <div id="modal-formula" class="modal-flotante" style="top: 60px; left: 15px; width: 320px; text-align: center;">
-    <h4 style="margin:0 0 10px 0; color: #1b5e20;">Ecuación de Highland en vivo</h4>
-    <div style="font-family: 'Times New Roman', serif; font-size: 1.2rem; background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px inset #ddd;">
-      θ ≈ (<span style="border-bottom: 1px solid #000;">13.6</span> / <b id="f-p" style="color: #c62828;">3000</b>) · √(<b id="f-x" style="color: #ef6c00;">0.20</b> / <b id="f-X0" style="color: #1565c0;">47.5</b>)
-    </div>
-    
-    <div style="margin-top: 10px; font-size: 0.75rem; text-align: left; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; border-top: 1px solid #eee; padding-top: 10px;">
-      <div><span style="color: #c62828; font-weight: bold;">■</span> p: <span id="idx-p">3000</span> MeV</div>
-      <div><span style="color: #ef6c00; font-weight: bold;">■</span> x: <span id="idx-x">0.20</span> cm</div>
-      <div><span style="color: #1565c0; font-weight: bold;">■</span> X₀: <span id="idx-X0">47.5</span> cm</div>
-      <div><span style="color: #666; font-weight: bold;">■</span> θ: <span id="idx-res">0.00</span> mrad</div>
-    </div>
-  </div>
-</div>
-
-  <h2>Filtrar Plásticos por Impacto Ambiental</h2>
-  <div class="filtros">
-    <label for="todos">Todos</label>
-    <label for="alta">Alta</label>
-    <label for="media">Media</label>
-    <label for="baja">Baja</label>
-  </div>
-
-  <div class="plastico alta">
-    <h3>PET (1) – Polietileno tereftalato</h3>
-    <p><strong>Uso:</strong> Botellas y envases. <strong>Degradación:</strong> ~450 años.</p>
-  </div>
-
-  <div class="plastico media">
-    <h3>HDPE (2) – Polietileno de alta densidad</h3>
-    <p><strong>Uso:</strong> Envases químicos. <strong>Degradación:</strong> ~100–200 años.</p>
-  </div>
-
-  <div class="plastico alta">
-    <h3>PVC (3) – Policloruro de vinilo</h3>
-    <p><strong>Uso:</strong> Construcción. Libera compuestos tóxicos al degradarse.</p>
-  </div>
-
-  <div class="plastico baja">
-    <h3>PP (5) – Polipropileno</h3>
-    <p><strong>Uso:</strong> Tapas y envases reutilizables. Menor impacto relativo.</p>
-  </div>
-
 </div>
 
 <script>
@@ -262,13 +238,14 @@
     PVC: { X0: 15.8 }   
   };
 
-  // Función única para mostrar/ocultar modales
   function toggleElemento(id) {
     const el = document.getElementById(id);
-    el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    if (el) {
+      el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    }
   }
 
-  // Listeners para los sliders
+  // Sincronización de Sliders
   document.getElementById('momento').addEventListener('input', function() {
     document.getElementById('momento-valor').innerText = this.value;
     correrFisica();
@@ -279,7 +256,7 @@
     correrFisica();
   });
 
-function correrFisica() {
+  function correrFisica() {
     const p_GeV = parseFloat(document.getElementById('momento').value);
     const p_MeV = p_GeV * 1000;
     const espesor_mm = parseFloat(document.getElementById('espesor').value);
@@ -287,28 +264,22 @@ function correrFisica() {
     const matId = document.getElementById('material').value;
     const mat = MATERIALES[matId];
 
-    // Cálculo Highland
     const x_sobre_X0 = x_cm / mat.X0;
     const theta_rad = (13.6 / p_MeV) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
     const theta_mrad = (theta_rad * 1000).toFixed(3);
 
-    // ACTUALIZAR NÚMEROS EN LA FÓRMULA f(x)
+    // Actualizar UI
     document.getElementById('f-p').innerText = Math.round(p_MeV);
     document.getElementById('f-x').innerText = x_cm.toFixed(2);
     document.getElementById('f-X0').innerText = mat.X0;
-
-    // ACTUALIZAR EL ÍNDICE DINÁMICO
     document.getElementById('idx-p').innerText = Math.round(p_MeV);
     document.getElementById('idx-x').innerText = x_cm.toFixed(2);
     document.getElementById('idx-X0').innerText = mat.X0;
     document.getElementById('idx-res').innerText = theta_mrad;
-    
-    // Mostrar resultados en el simulador
     document.getElementById('theta-val').innerText = theta_mrad;
     document.getElementById('resultado-box').style.display = 'block';
-}
+  }
 
-  // Ejecutar una vez al cargar para inicializar valores
   window.onload = correrFisica;
 </script>
 
