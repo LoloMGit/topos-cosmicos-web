@@ -71,8 +71,8 @@
 <input type="checkbox" id="entrar">
 
 <div class="portal">
-  <h1>PlasticScan: Proyecto BL4S</h1>
-  <p>Estudio de polímeros en el CERN - Versión 1.2.7</p>
+  <h1>Plastic Scan: Proyecto BL4S</h1>
+  <p>Estudio de polímeros en el CERN - Versión 1.0.5</p>
   <label for="entrar" class="boton-entrar">Acceder al estudio</label>
 </div>
 
@@ -118,9 +118,9 @@
     
     <label>Material de la muestra:</label>
     <select id="material">
-      <option value="HDPE">HDPE (Polietileno - X₀: 47.5)</option>
-      <option value="PET">PET (Botellas - X₀: 28.5)</option>
-      <option value="PVC">PVC (Contaminante - X₀: 15.8)</option>
+      <option value="HDPE">HDPE (Polietileno  X₀=47.5)</option>
+      <option value="PET">PET (Botellas  X₀=28.5)</option>
+      <option value="PVC">PVC (Contaminante  X₀=15.8)</option>
     </select>
 
     <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
@@ -128,7 +128,10 @@
 
     <label>Espesor de la muestra: <span id="espesor-valor">2.0</span> mm</label>
     <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
-
+   <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-weight: normal; margin-bottom: 10px">
+  <input type="checkbox" id="auto-recalculo" style="display: inline-block; width: auto;">
+     <span>Activar auto-recalculo</span>
+    </label>
     <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
 
     <div id="resultado-box">
@@ -182,9 +185,11 @@
     // 1. Actualizamos los números en la interfaz principal (etiquetas de los sliders)
     document.getElementById('momento-valor').innerText = document.getElementById('momento').value;
     document.getElementById('espesor-valor').innerText = document.getElementById('espesor').value;
-    
-    // 2. Solo cambiamos el texto del botón si ya hubo una simulación previa
-    if (simulacionRealizada) {
+    const esAuto = document.getElementById('auto-recalculo').checked;
+    if (esAuto) {
+      correrFisica();
+   
+    } else if (simulacionRealizada) {
       const btn = document.querySelector('.btn-simular');
       btn.innerHTML = "🔄 RECALCULAR SIMULACIÓN";
       document.getElementById('idx-res').innerText = "---";
