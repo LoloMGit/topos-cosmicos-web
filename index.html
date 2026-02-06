@@ -168,65 +168,79 @@
   <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
 
   <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c8e6c9;">
-    <label style="margin:0; color: #2e7d32;">⚡ Cargar configuración rápida:</label>
-    <select id="presets" onchange="aplicarPreset(this.value)" style="margin-top: 8px;">
-      <option value="">-- Selecciona un escenario --</option>
-      <option value="bajo">Energía Baja (Haz suave - 1.5 GeV)</option>
-      <option value="medio">Energía Media (Estándar - 3.5 GeV)</option>
-      <option value="alto">Energía Alta (Haz fuerte - 6.0 GeV)</option>
+    <label style="margin:0; color: #2e7d32; font-weight: bold;">📋 Seleccionar Muestra de Plástico:</label>
+    <p style="font-size: 0.8rem; margin: 5px 0;">(Esto cambia la Longitud de Radiación X₀ en la fórmula)</p>
+    <select id="selector-muestras" onchange="cargarMaterial(this.value)" style="margin-top: 8px; border: 2px solid #1b5e20;">
+      <option value="HDPE">HDPE (Polietileno - Virgen)</option>
+      <option value="PET">PET (Botellas - Reciclado)</option>
+      <option value="PVC">PVC (Cloruro de Vinilo - Contaminado)</option>
     </select>
   </div>
   
-  <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
+  <label>Energía del haz (p): <span id="momento-valor">3.0</span> GeV</label>
   <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
 
-  <label>Material de la muestra:</label>
-  <select id="material">
-    <option value="HDPE">HDPE (Polietileno)</option>
-    <option value="PET">PET (Botellas)</option>
-    <option value="PVC">PVC (Cloruro de Vinilo)</option>
-  </select>
-
-  <label>Espesor: <span id="espesor-valor">2.0</span> mm</label>
+  <label>Espesor de la muestra (x): <span id="espesor-valor">2.0</span> mm</label>
   <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
 
   <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
 
   <div id="resultado-box">
-    <strong>Ángulo de Dispersión (θ):</strong><br>
+    <strong>Ángulo de Dispersión Estimado (θ):</strong><br>
     <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
+    <p id="info-fisica" style="font-size: 0.85rem; color: #666; margin-top: 10px;"></p>
   </div>
 
   <div id="modal-ayuda" style="display:none; position:absolute; top:50px; right:10px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 10px rgba(0,0,0,0.3); max-width: 250px;">
-    <h4 style="margin:0;">¿Cómo funciona?</h4>
-    <p style="font-size: 0.8rem;">La <strong>Fórmula de Highland</strong> predice la desviación. A menor energía, las partículas se dispersan más[cite: 1, 89].</p>
+    <h4 style="margin:0;">Física del Experimento</h4>
+    <p style="font-size: 0.75rem;">Usamos la <strong>Fórmula de Highland</strong>[cite: 89]:<br>
+    <em>θ ∝ √(x/X₀)</em><br><br>
+    Cada plástico tiene una <strong>X₀ (Longitud de radiación)</strong> distinta. Los plásticos con elementos pesados (como el Cloro en el PVC) tienen una X₀ menor y desvían más las partículas[cite: 96, 138].</p>
     <button onclick="toggleAyuda()" style="padding:4px 8px;">Cerrar</button>
   </div>
 </div>
 
+<div class="contenido">
+  <h2>Clasificación de Plásticos (Muestras de Referencia)</h2>
+  <div class="plastico baja" onclick="cargarMaterial('HDPE')" style="cursor:pointer;">
+    <h3>HDPE (2) – Polietileno de alta densidad</h3>
+    <p><strong>X₀:</strong> 47.5 cm | <strong>Impacto:</strong> Bajo [cite: 138]</p>
+  </div>
+
+  <div class="plastico media" onclick="cargarMaterial('PET')" style="cursor:pointer;">
+    <h3>PET (1) – Polietileno tereftalato</h3>
+    <p><strong>X₀:</strong> 28.5 cm | <strong>Impacto:</strong> Medio </p>
+  </div>
+
+  <div class="plastico alta" onclick="cargarMaterial('PVC')" style="cursor:pointer;">
+    <h3>PVC (3) – Policloruro de vinilo</h3>
+    <p><strong>X₀:</strong> 15.8 cm | <strong>Impacto:</strong> Alto (Contaminante) [cite: 140]</p>
+  </div>
+</div>
+
 <script>
-  // Función para que el menú desplegable de presets funcione
-  function aplicarPreset(valor) {
-    if (!valor) return;
-    
-    const sliderE = document.getElementById('momento');
-    const txtE = document.getElementById('momento-valor');
+  // Datos técnicos reales [cite: 138, 139, 140]
+  const MATERIALES = {
+    HDPE: { nombre: 'HDPE', X0: 47.5 }, 
+    PET: { nombre: 'PET', X0: 28.5 },  
+    PVC: { nombre: 'PVC', X0: 15.8 }   
+  };
 
-    if (valor === 'bajo') { sliderE.value = 1.5; }
-    else if (valor === 'medio') { sliderE.value = 3.5; }
-    else if (valor === 'alto') { sliderE.value = 6.0; }
-
-    txtE.innerText = sliderE.value;
-    correrFisica(); // Ejecuta la simulación automáticamente al cambiar el preset
+  // Función para cargar material desde el selector o desde las tarjetas
+  function cargarMaterial(id) {
+    document.getElementById('selector-muestras').value = id;
+    correrFisica();
   }
 
-  // Mantener los listeners para que los sliders manuales sigan funcionando
+  // Actualización de Sliders
   document.getElementById('momento').addEventListener('input', function() {
     document.getElementById('momento-valor').innerText = this.value;
+    correrFisica();
   });
 
   document.getElementById('espesor').addEventListener('input', function() {
     document.getElementById('espesor-valor').innerText = this.value;
+    correrFisica();
   });
 
   function toggleAyuda() {
@@ -234,7 +248,27 @@
     m.style.display = m.style.display === 'none' ? 'block' : 'none';
   }
 
-  // Aquí sigue tu función correrFisica() con la fórmula de Highland...
+  function correrFisica() {
+    const p_GeV = parseFloat(document.getElementById('momento').value);
+    const p_MeV = p_GeV * 1000; [cite: 143]
+    const x_mm = parseFloat(document.getElementById('espesor').value);
+    const x_cm = x_mm / 10; [cite: 144]
+    
+    const matId = document.getElementById('selector-muestras').value;
+    const mat = MATERIALES[matId];
+    
+    // Constantes para la fórmula [cite: 145, 147]
+    const beta = 1; // Para energías de GeV, beta es casi 1
+    const x_sobre_X0 = x_cm / mat.X0;
+    
+    // Aplicación de la Fórmula de Highland [cite: 147]
+    const theta_rad = (13.6 / (p_MeV * beta)) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+    
+    // Resultados en miliradianes [cite: 148]
+    document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
+    document.getElementById('info-fisica').innerText = `Simulando ${mat.nombre} con X₀ = ${mat.X0} cm`;
+    document.getElementById('resultado-box').style.display = 'block';
+  }
 </script>
   // Constantes de radiación (X0) del documento BL4S
   const MATERIALES = {
