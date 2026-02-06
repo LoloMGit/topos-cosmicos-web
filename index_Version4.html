@@ -103,6 +103,28 @@
 <body>
 
 <input type="checkbox" id="entrar">
+<section id="simulador-seccion" class="config-box" style="background: white; padding: 20px; border-radius: 10px; border: 2px solid #1b5e20; margin-bottom: 30px;">
+    <h2>🔬 Simulador de Dispersión (Fórmula de Highland)</h2>
+    
+    <label style="display:block;">Energía de la partícula: <span id="v-energia">3.0</span> GeV</label>
+    <input type="range" id="input-energia" min="1" max="6" step="0.1" value="3.0" style="display:block; width:100%; margin-bottom:15px;">
+
+    <label style="display:block;">Tipo de Plástico:</label>
+    <select id="input-material" style="width:100%; padding:10px; margin-bottom:15px;">
+        <option value="HDPE">HDPE (Polietileno de alta densidad)</option>
+        <option value="PET">PET (Botellas)</option>
+        <option value="PVC">PVC (Cloruro de polivinilo)</option>
+    </select>
+
+    <button onclick="ejecutarSimulacion()" style="width:100%; padding:15px; background:#1b5e20; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">
+        EJECUTAR SIMULACIÓN
+    </button>
+
+    <div id="resultado-simulacion" style="margin-top:20px; padding:15px; background:#e8f5e9; display:none; border-radius:5px;">
+        <strong>Ángulo de Dispersión calculado ($\theta$):</strong> 
+        <span id="valor-theta" style="font-size:1.5rem; color:#1b5e20;">0</span> mrad
+    </div>
+</section>
 
 <div class="portal">
   <h1>Clasificación de Plásticos</h1>
@@ -184,6 +206,36 @@ de nuevas estrategias de mitigación, reciclaje avanzado y sustitución por mate
 </p>
 
 </div>
+<script>
+    // Datos físicos del documento [cite: 138, 141]
+    const MATERIALES = {
+        HDPE: { X0: 47.5, masa: 0.511 }, // Electrón de prueba
+        PET: { X0: 28.5, masa: 0.511 },
+        PVC: { X0: 15.8, masa: 0.511 }
+    };
+
+    // Actualizar texto del slider
+    document.getElementById('input-energia').addEventListener('input', function() {
+        document.getElementById('v-energia').innerText = this.value;
+    });
+
+    function ejecutarSimulacion() {
+        const p = parseFloat(document.getElementById('input-energia').value) * 1000; // a MeV
+        const material = MATERIALES[document.getElementById('input-material').value];
+        const x_cm = 0.2; // Espesor fijo de 2mm para el ejemplo [cite: 144]
+        
+        const x_sobre_X0 = x_cm / material.X0;
+        
+        // Fórmula de Highland simplificada [cite: 147]
+        const theta = (13.6 / p) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+        
+        const resultadoDiv = document.getElementById('resultado-simulacion');
+        const valorTheta = document.getElementById('valor-theta');
+        
+        valorTheta.innerText = (theta * 1000).toFixed(4); // Convertir a mrad [cite: 148]
+        resultadoDiv.style.display = 'block';
+    }
+</script>
 
 </body>
 </html>
