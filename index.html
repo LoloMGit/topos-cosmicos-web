@@ -22,28 +22,7 @@
 <body>
 
 <input type="checkbox" id="entrar">
-<section id="simulador-seccion" class="config-box" style="background: white; padding: 20px; border-radius: 10px; border: 2px solid #1b5e20; margin-bottom: 30px;">
-    <h2>🔬 Simulador de Dispersión (Fórmula de Highland)</h2>
-    
-    <label style="display:block;">Energía de la partícula: <span id="v-energia">3.0</span> GeV</label>
-    <input type="range" id="input-energia" min="1" max="6" step="0.1" value="3.0" style="display:block; width:100%; margin-bottom:15px;">
 
-    <label style="display:block;">Tipo de Plástico:</label>
-    <select id="input-material" style="width:100%; padding:10px; margin-bottom:15px;">
-        <option value="HDPE">HDPE (Polietileno de alta densidad)</option>
-        <option value="PET">PET (Botellas)</option>
-        <option value="PVC">PVC (Cloruro de polivinilo)</option>
-    </select>
-
-    <button onclick="ejecutarSimulacion()" style="width:100%; padding:15px; background:#1b5e20; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">
-        EJECUTAR SIMULACIÓN
-    </button>
-
-    <div id="resultado-simulacion" style="margin-top:20px; padding:15px; background:#e8f5e9; display:none; border-radius:5px;">
-        <strong>Ángulo de Dispersión calculado ($\theta$):</strong> 
-        <span id="valor-theta" style="font-size:1.5rem; color:#1b5e20;">0</span> mrad
-    </div>
-</section>
 
 <div class="portal">
   <h1>Clasificación de Plásticos</h1>
