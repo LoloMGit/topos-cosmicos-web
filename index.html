@@ -6,7 +6,6 @@
   <title>PlasticScan - Clasificación de Plásticos y Simulación CERN</title>
 
   <style>
-    /* ESTILOS ORIGINALES DE TU COMPAÑERO */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -28,7 +27,7 @@
       align-items: center;
       text-align: center;
       padding: 30px;
-      z-index: 10;
+      z-index: 100;
     }
 
     .boton-entrar {
@@ -52,7 +51,6 @@
 
     h1, h2, h3 { color: #1b5e20; }
 
-    /* ESTILOS DEL SIMULADOR (NUEVOS Y AJUSTADOS) */
     .config-box {
       background: white;
       padding: 25px;
@@ -60,11 +58,11 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       margin: 30px 0;
       border-top: 5px solid #1b5e20;
+      position: relative;
     }
 
     label { font-weight: bold; display: block; margin-top: 15px; }
     
-    /* Estilo para sliders visibles */
     input[type="range"] { 
       display: block; 
       width: 100%; 
@@ -103,7 +101,7 @@
       border: 1px solid #c8e6c9;
     }
 
-    /* ESTILOS DE FILTROS DE TU COMPAÑERO */
+    /* FILTROS ORIGINALES */
     .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
     .filtros label {
       background: #ddd;
@@ -111,7 +109,6 @@
       border-radius: 20px;
       cursor: pointer;
       font-weight: 600;
-      display: inline-block;
     }
 
     #todos:checked ~ .contenido label[for="todos"],
@@ -139,6 +136,18 @@
     #baja:checked  ~ .contenido .plastico:not(.baja) {
       display: none;
     }
+
+    /* MODALES */
+    .modal-flotante {
+      display: none;
+      position: absolute;
+      background: white;
+      border: 2px solid #1b5e20;
+      padding: 15px;
+      border-radius: 10px;
+      z-index: 10;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 
@@ -162,72 +171,49 @@
   <h1>Introducción</h1>
   <p>Este proyecto busca determinar la pureza de plásticos reciclados utilizando el haz de partículas de una línea de luz (Beamline), analizando cómo se desvían las partículas al atravesar el material.</p>
 
-  <div class="config-box" style="position: relative;">
-  <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px;">
-    <button onclick="toggleAyuda()" style="width: 35px; height: 35px; border-radius: 50%; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem;">?</button>
-    <button onclick="toggleFormula()" style="width: 35px; height: 35px; border-radius: 8px; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.9rem;">f(x)</button>
-  </div>
-
-  <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
-  
-  <label>Material de la muestra:</label>
-  <select id="material" onchange="correrFisica()">
-    <option value="HDPE">HDPE (Polietileno - X₀: 47.5)</option>
-    <option value="PET">PET (Botellas - X₀: 28.5)</option>
-    <option value="PVC">PVC (Contaminante - X₀: 15.8)</option>
-  </select>
-
-  <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
-  <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
-
-  <label>Espesor de la muestra: <span id="espesor-valor">2.0</span> mm</label>
-  <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
-
-  <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
-
-  <div id="resultado-box">
-    <strong>Ángulo de Dispersión Estimado (θ):</strong><br>
-    <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
-  </div>
-
-  <div id="modal-formula" style="display:none; position:absolute; top:100px; right:15px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 300px;">
-    <h4 style="margin:0 0 10px 0; color: #1b5e20;">Ecuación en tiempo real</h4>
-    <div style="font-family: 'Times New Roman', serif; font-size: 1.1rem; background: #fdfdfd; padding: 10px; border: 1px solid #eee; border-radius: 5px;">
-       θ ≈ <span style="font-size: 0.9rem;">(13.6 / <b id="f-p" style="color: #c62828;">3000</b>)</span> · 
-       √(<b id="f-x">0.2</b> / <b id="f-X0" style="color: #1565c0;">47.5</b>)
+  <div class="config-box">
+    <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px;">
+      <button onclick="toggleElemento('modal-ayuda')" style="width: 35px; height: 35px; border-radius: 50%; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer;">?</button>
+      <button onclick="toggleElemento('modal-formula')" style="width: 35px; height: 35px; border-radius: 8px; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer;">f(x)</button>
     </div>
-    <p style="font-size: 0.7rem; color: #666; margin-top: 8px;">Valores: p = MeV | x = cm | X₀ = rad. length</p>
-  </div>
 
-  <div id="modal-ayuda" style="display:none; position:absolute; top:60px; right:60px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 250px;">
-    <p style="font-size: 0.85rem; margin:0;">A mayor energía, menor desviación. El PVC tiene átomos de cloro pesados que bajan la X₀ y aumentan θ.</p>
-  </div>
-</div>
-        • Materiales con <strong>X₀ bajo</strong> (como el PVC) generan ángulos de dispersión más grandes.
+    <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
+    
+    <label>Material de la muestra:</label>
+    <select id="material" onchange="correrFisica()">
+      <option value="HDPE">HDPE (Polietileno de Alta Densidad)</option>
+      <option value="PET">PET (Botellas de Plástico)</option>
+      <option value="PVC">PVC (Policloruro de Vinilo)</option>
+    </select>
+
+    <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
+    <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
+
+    <label>Espesor de la muestra: <span id="espesor-valor">2.0</span> mm</label>
+    <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
+
+    <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
+
+    <div id="resultado-box">
+      <strong>Ángulo de Dispersión Estimado (θ):</strong><br>
+      <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
+    </div>
+
+    <div id="modal-ayuda" class="modal-flotante" style="top: 60px; right: 15px; max-width: 250px;">
+      <p style="font-size: 0.85rem; margin: 0;">
+        A mayor energía, menor desviación. Materiales con <strong>X₀ bajo</strong> (como el PVC) generan ángulos más grandes.
       </p>
-      <button onclick="toggleAyuda()" style="margin-top:10px; padding:5px 10px; cursor:pointer; background:#ddd; border:none; border-radius:4px;">Cerrar</button>
+    </div>
+
+    <div id="modal-formula" class="modal-flotante" style="top: 105px; right: 15px; width: 300px; text-align: center;">
+      <h4 style="margin:0 0 10px 0; color: #1b5e20;">Ecuación de Highland</h4>
+      <div style="font-family: 'Times New Roman', serif; font-size: 1.1rem; background: #f9f9f9; padding: 10px; border-radius: 5px;">
+        θ ≈ (13.6 / <b id="f-p" style="color: #c62828;">3000</b>) · √(<b id="f-x">0.20</b> / <b id="f-X0" style="color: #1565c0;">47.5</b>)
+      </div>
+      <p style="font-size: 0.7rem; color: #666; margin-top: 8px;">p = MeV | x = cm | X₀ = rad. length</p>
     </div>
   </div>
-  <button onclick="toggleFormula()" style="position: absolute; top: 15px; right: 55px; width: 40px; height: 30px; border-radius: 5px; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.9rem; z-index: 5;">f(x)</button>
 
-<div id="modal-formula" style="display:none; position:absolute; top:55px; right:15px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 320px; text-align: center;">
-  <h4 style="margin:0 0 10px 0; color: #1b5e20;">Ecuación de Highland</h4>
-  <div style="font-family: 'Times New Roman', serif; font-size: 1.2rem; background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px inset #ddd;">
-    θ = <div style="display: inline-block; vertical-align: middle; text-align: center;">
-          <span style="border-bottom: 1px solid black;">13.6 MeV</span><br>
-          <span id="f-p" style="color: #c62828; font-weight: bold;">3000</span>
-        </div> 
-    · √<div style="display: inline-block; vertical-align: middle; text-align: center;">
-          <span style="border-bottom: 1px solid black;" id="f-x">0.2</span><br>
-          <span id="f-X0" style="color: #1565c0; font-weight: bold;">47.5</span>
-        </div>
-    · [1 + 0.038 ln(<span id="f-log">...</span>)]
-  </div>
-  <p style="font-size: 0.75rem; color: #555; margin-top: 10px;">
-    Leyenda: <span style="color: #c62828;">Momento (p)</span> | <span style="color: #1565c0;">Rad. Length (X₀)</span>
-  </p>
-  <button onclick="toggleFormula()" style="margin-top:10px; padding:5px 10px; cursor:pointer;">Cerrar</button>
-</div>
   <h2>Filtrar Plásticos por Impacto Ambiental</h2>
   <div class="filtros">
     <label for="todos">Todos</label>
@@ -259,32 +245,27 @@
 </div>
 
 <script>
-  <script>
   const MATERIALES = {
     HDPE: { X0: 47.5 }, 
     PET: { X0: 28.5 },  
     PVC: { X0: 15.8 }   
   };
 
-  function toggleAyuda() {
-    const m = document.getElementById('modal-ayuda');
-    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  // Función única para mostrar/ocultar modales
+  function toggleElemento(id) {
+    const el = document.getElementById(id);
+    el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
   }
 
-  function toggleFormula() {
-    const m = document.getElementById('modal-formula');
-    m.style.display = m.style.display === 'none' ? 'block' : 'none';
-  }
-
-  // EVENTOS PARA LOS SLIDERS
+  // Listeners para los sliders
   document.getElementById('momento').addEventListener('input', function() {
     document.getElementById('momento-valor').innerText = this.value;
-    correrFisica(); // ESTO hace que la fórmula cambie mientras mueves el slider
+    correrFisica();
   });
 
   document.getElementById('espesor').addEventListener('input', function() {
     document.getElementById('espesor-valor').innerText = this.value;
-    correrFisica(); // ESTO actualiza la fórmula en vivo
+    correrFisica();
   });
 
   function correrFisica() {
@@ -295,98 +276,22 @@
     const matId = document.getElementById('material').value;
     const mat = MATERIALES[matId];
 
-    // ACTUALIZAR NÚMEROS EN EL CUADRO f(x)
-    if(document.getElementById('f-p')) {
-        document.getElementById('f-p').innerText = Math.round(p_MeV);
-        document.getElementById('f-x').innerText = x_cm.toFixed(2);
-        document.getElementById('f-X0').innerText = mat.X0;
-    }
-
-    // CÁLCULO FÍSICO
-    const x_sobre_X0 = x_cm / mat.X0;
-    const theta_rad = (13.6 / p_MeV) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
-    
-    document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
-    document.getElementById('resultado-box').style.display = 'block';
-  }
-</script>
-  function toggleFormula() {
-    const modal = document.getElementById('modal-formula');
-    modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
-}
-
-function correrFisica() {
-    const p_GeV = parseFloat(document.getElementById('momento').value);
-    const p_MeV = p_GeV * 1000;
-    const espesor_mm = parseFloat(document.getElementById('espesor').value);
-    const x_cm = espesor_mm / 10;
-    const mat = MATERIALES[document.getElementById('material').value];
-    
-    const m = 0.511;
-    const E = Math.sqrt(Math.pow(p_MeV, 2) + Math.pow(m, 2));
-    const beta = p_MeV / E;
-    const x_sobre_X0 = x_cm / mat.X0;
-    
-    // --- ACTUALIZACIÓN DE LA FÓRMULA VISUAL ---
-    document.getElementById('f-p').innerText = Math.round(p_MeV) + " MeV";
+    // Actualizar números en la fórmula f(x)
+    document.getElementById('f-p').innerText = Math.round(p_MeV);
     document.getElementById('f-x').innerText = x_cm.toFixed(2);
     document.getElementById('f-X0').innerText = mat.X0;
-    document.getElementById('f-log').innerText = x_sobre_X0.toFixed(4);
-    // ------------------------------------------
 
-    const theta_rad = (13.6 / (p_MeV * beta)) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
-    
-    document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
-    document.getElementById('resultado-box').style.display = 'block';
-}
-  // Función para mostrar/ocultar el cuadro de ayuda
-  function toggleAyuda() {
-    const modal = document.getElementById('modal-ayuda');
-    if (modal.style.display === 'none' || modal.style.display === '') {
-      modal.style.display = 'block';
-    } else {
-      modal.style.display = 'none';
-    }
-  }
-  // Constantes de radiación (X0) del documento BL4S
-  const MATERIALES = {
-    HDPE: { X0: 47.5 }, 
-    PET: { X0: 28.5 },  
-    PVC: { X0: 15.8 }   
-  };
-
-  // 1. CONEXIÓN DE SLIDERS (Para que los números cambien al moverlos)
-  document.getElementById('momento').addEventListener('input', function() {
-    document.getElementById('momento-valor').innerText = this.value;
-  });
-
-  document.getElementById('espesor').addEventListener('input', function() {
-    document.getElementById('espesor-valor').innerText = this.value;
-  });
-
-  // 2. LÓGICA DE SIMULACIÓN
-  function correrFisica() {
-    const p_GeV = parseFloat(document.getElementById('momento').value);
-    const p_MeV = p_GeV * 1000;
-    const espesor_mm = parseFloat(document.getElementById('espesor').value);
-    const x_cm = espesor_mm / 10;
-    
-    const mat = MATERIALES[document.getElementById('material').value];
-    
-    // Física: Electrón m=0.511 MeV
-    const m = 0.511;
-    const E = Math.sqrt(Math.pow(p_MeV, 2) + Math.pow(m, 2));
-    const beta = p_MeV / E;
-    
+    // Cálculo Highland
     const x_sobre_X0 = x_cm / mat.X0;
-    
-    // Fórmula de Highland (CERN Standard)
-    const theta_rad = (13.6 / (p_MeV * beta)) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+    const theta_rad = (13.6 / p_MeV) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
     
     // Mostrar resultados
     document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
     document.getElementById('resultado-box').style.display = 'block';
   }
+
+  // Ejecutar una vez al cargar para inicializar valores
+  window.onload = correrFisica;
 </script>
 
 </body>
