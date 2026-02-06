@@ -1,189 +1,120 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Clasificación de Plásticos y Contaminación Ambiental</title>
-
-  <link rel="stylesheet" href="style.css">
-  <style>
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f4f7f6; color: #333; }
-  .contenido { max-width: 900px; margin: auto; padding: 20px; }
-  .config-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; border-top: 5px solid #1b5e20; }
-  h1, h2 { color: #1b5e20; text-align: center; }
-  label { font-weight: bold; display: block; margin-top: 15px; }
-  input[type="range"], select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-  .btn-simular { background: #1b5e20; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem; margin-top: 20px; }
-  .btn-simular:hover { background: #2e7d32; }
-  #resultado-box { display: none; background: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: center; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlasticScan - Simulador de Dispersión</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
+        h1 { color: #1b5e20; text-align: center; }
+        .config-box { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 5px solid #1b5e20; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #34495e; margin-top: 10px; }
+        select, input[type="range"] { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { width: 100%; padding: 15px; background-color: #1b5e20; color: white; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #2e7d32; }
+        .resultado { background: #e8f6ff; padding: 20px; border-radius: 10px; border-left: 5px solid #1b5e20; text-align: center; }
+        .resultado-numero { font-size: 32px; font-weight: bold; color: #1b5e20; }
+        .diferencia-positiva { color: #e74c3c; font-weight: bold; }
+    </style>
 </head>
-
 <body>
 
-<input type="checkbox" id="entrar">
+    <h1>🔬 PlasticScan: Simulador de Dispersión</h1>
 
-
-<div class="portal">
-  <h1>Clasificación de Plásticos</h1>
-  <p>
-    Proyecto informativo sobre los distintos tipos de plásticos, su persistencia
-    ambiental y su contribución a la contaminación global y la generación de microplásticos.
-  </p>
-  <label for="entrar" class="boton">Acceder al estudio</label>
-</div>
-
-<input type="radio" name="filtro" id="todos" checked>
-<input type="radio" name="filtro" id="alta">
-<input type="radio" name="filtro" id="media">
-<input type="radio" name="filtro" id="baja">
-
-<div class="contenido">
-
-<h1>Introducción</h1>
-<p>
-Los plásticos sintéticos constituyen uno de los materiales más utilizados en la sociedad moderna.
-Su resistencia química y durabilidad, propiedades deseables desde el punto de vista industrial,
-representan un problema crítico cuando se liberan al ambiente.
-</p>
-<div class="config-box">
-  <h2>🔬 Simulador de Dispersión de Partículas</h2>
-  <p>Predice el ángulo de dispersión según el material y la energía.</p>
-  
-  <label>Energía del haz: <span id="val-e">3.0</span> GeV</label>
-  <input type="range" id="e-input" min="1" max="6" step="0.1" value="3.0">
-
-  <label>Material de la muestra:</label>
-  <select id="mat-input">
-    <option value="HDPE">HDPE (Plástico Virgen)</option>
-    <option value="PET">PET (Botellas Recicladas)</option>
-    <option value="PVC">PVC (Alto Contaminante)</option>
-  </select>
-
-  <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
-
-  <div id="resultado-box">
-    <strong>Ángulo de Dispersión Estimado:</strong><br>
-    <span id="theta-val" style="font-size: 2rem; color: #1b5e20;">0.00</span> mrad
-  </div>
-</div>
-<h2>Filtrar por nivel de impacto ambiental</h2>
-<div class="filtros">
-  <label for="todos">Todos</label>
-  <label for="alta">Alta</label>
-  <label for="media">Media</label>
-  <label for="baja">Baja</label>
-</div>
-
-<div class="plastico alta">
-  <h3>PET (1) – Polietileno tereftalato</h3>
-  <p><strong>Uso:</strong> Botellas y envases de bebidas.</p>
-  <p><strong>Degradación:</strong> ~450 años.</p>
-  <p>
-    Alta presencia en residuos marinos. Su fragmentación genera microplásticos
-    que ingresan a cadenas tróficas acuáticas.
-  </p>
-</div>
-
-<div class="plastico media">
-  <h3>HDPE (2) – Polietileno de alta densidad</h3>
-  <p><strong>Uso:</strong> Envases de productos químicos y alimenticios.</p>
-  <p><strong>Degradación:</strong> ~100–200 años.</p>
-  <p>
-    Presenta buena reciclabilidad, aunque su acumulación sigue siendo significativa.
-  </p>
-</div>
-
-<div class="plastico alta">
-  <h3>PVC (3) – Policloruro de vinilo</h3>
-  <p><strong>Uso:</strong> Caños, cables, construcción.</p>
-  <p>
-    Libera compuestos tóxicos durante su degradación. Considerado uno de los plásticos
-    más problemáticos ambientalmente.
-  </p>
-</div>
-
-<div class="plastico baja">
-  <h3>PP (5) – Polipropileno</h3>
-  <p><strong>Uso:</strong> Envases reutilizables y tapas.</p>
-  <p>
-    Menor impacto relativo y buena resistencia térmica. Su reciclaje es técnicamente viable.
-  </p>
-</div>
-
-<h2>Microplásticos</h2>
-<p>
-La fragmentación física y fotoquímica de los plásticos da origen a microplásticos
-(&lt;5 mm), detectados actualmente en océanos, suelos, agua potable e incluso en tejidos humanos.
-</p>
-
-<h2>Conclusión</h2>
-<p>
-El estudio del comportamiento ambiental de los plásticos es esencial para el desarrollo
-de nuevas estrategias de mitigación, reciclaje avanzado y sustitución por materiales sostenibles.
-</p>
-
-</div>
-<script>
-    // Datos físicos del documento [cite: 138, 141]
-    const MATERIALES = {
-        HDPE: { X0: 47.5, masa: 0.511 }, // Electrón de prueba
-        PET: { X0: 28.5, masa: 0.511 },
-        PVC: { X0: 15.8, masa: 0.511 }
-    };
-
-    // Actualizar texto del slider
-    document.getElementById('input-energia').addEventListener('input', function() {
-        document.getElementById('v-energia').innerText = this.value;
-    });
-
-    function ejecutarSimulacion() {
-        const p = parseFloat(document.getElementById('input-energia').value) * 1000; // a MeV
-        const material = MATERIALES[document.getElementById('input-material').value];
-        const x_cm = 0.2; // Espesor fijo de 2mm para el ejemplo [cite: 144]
+    <div class="config-box">
+        <h2>Configuración del Experimento</h2>
         
-        const x_sobre_X0 = x_cm / material.X0;
-        
-        // Fórmula de Highland simplificada [cite: 147]
-        const theta = (13.6 / p) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
-        
-        const resultadoDiv = document.getElementById('resultado-simulacion');
-        const valorTheta = document.getElementById('valor-theta');
-        
-        valorTheta.innerText = (theta * 1000).toFixed(4); // Convertir a mrad [cite: 148]
-        resultadoDiv.style.display = 'block';
-    }
-</script>
-<script>
-  const MATERIALES = {
-    HDPE: { X0: 47.5 }, // [cite: 138]
-    PET: { X0: 28.5 },  // [cite: 139]
-    PVC: { X0: 15.8 }   // [cite: 140]
-  };
+        <label>Tipo de partícula:</label>
+        <select id="particula">
+            <option value="electron">Electrón</option>
+            <option value="muon">Muón</option>
+        </select>
 
-  document.getElementById('e-input').addEventListener('input', (e) => {
-    document.getElementById('val-e').innerText = e.target.value;
-  });
+        <label>Momento (Energía): <span id="momento-valor">3.0</span> GeV/c</label>
+        <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
 
-  function correrFisica() {
-    const p = parseFloat(document.getElementById('e-input').value) * 1000; // GeV a MeV [cite: 143]
-    const material = MATERIALES[document.getElementById('mat-input').value];
-    const x_cm = 0.2; // Espesor de 2mm [cite: 144]
-    
-    // Aplicando Fórmula de Highland [cite: 147]
-    const x_sobre_X0 = x_cm / material.X0;
-    const theta_rad = (13.6 / p) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
-    
-    document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
-    document.getElementById('resultado-box').style.display = 'block';
-  }
-</script>
+        <label>Tipo de plástico base:</label>
+        <select id="material">
+            <option value="HDPE">HDPE (Polietileno)</option>
+            <option value="PET">PET (Botellas)</option>
+        </select>
+
+        <label>Contaminante adicional:</label>
+        <select id="contaminante">
+            <option value="ninguno">Ninguno (Virgen)</option>
+            <option value="PVC">Cloro (PVC)</option>
+        </select>
+
+        <label>% de Contaminación: <span id="contaminacion-valor">0</span>%</label>
+        <input type="range" id="contaminacion" min="0" max="10" step="0.5" value="0">
+
+        <button onclick="simular()">▶ EJECUTAR SIMULACIÓN</button>
+    </div>
+
+    <div id="resultados" class="config-box" style="display: none;">
+        <h2>Resultados del Beamline</h2>
+        <div class="resultado">
+            <p>Ángulo de dispersión (θ):</p>
+            <p class="resultado-numero"><span id="theta-resultado">0.00</span> mrad</p>
+        </div>
+        <div id="interpretacion" style="margin-top: 15px; padding: 15px; border-radius: 5px; background: #fff; border: 1px solid #ddd;">
+            </div>
+    </div>
+
+    <script>
+        const MATERIALES = {
+            HDPE: { X0: 47.5, density: 0.94, Z_eff: 3.5 },
+            PET: { X0: 28.5, density: 1.38, Z_eff: 4.5 },
+            PVC: { X0: 15.8, density: 1.40, Z_eff: 9.0 }
+        };
+
+        const PARTICULAS = {
+            electron: { masa: 0.511 },
+            muon: { masa: 105.7 }
+        };
+
+        // Actualizar números de los sliders en tiempo real [cite: 195, 197]
+        document.getElementById('momento').addEventListener('input', function() {
+            document.getElementById('momento-valor').textContent = this.value;
+        });
+        document.getElementById('contaminacion').addEventListener('input', function() {
+            document.getElementById('contaminacion-valor').textContent = this.value;
+        });
+
+        function simular() {
+            const momento = parseFloat(document.getElementById('momento').value);
+            const p_MeV = momento * 1000;
+            const x_cm = 0.2; // Espesor 2mm [cite: 144]
+            
+            const matBase = MATERIALES[document.getElementById('material').value];
+            const part = PARTICULAS[document.getElementById('particula').value];
+            const contNombre = document.getElementById('contaminante').value;
+            const porc = parseFloat(document.getElementById('contaminacion').value) / 100;
+
+            // Lógica de mezcla [cite: 150]
+            let X0_final = matBase.X0;
+            if (contNombre !== 'ninguno' && porc > 0) {
+                const matCont = MATERIALES[contNombre];
+                X0_final = 1 / (porc / matCont.X0 + (1 - porc) / matBase.X0);
+            }
+
+            // Fórmula de Highland [cite: 147]
+            const E = Math.sqrt(p_MeV**2 + part.masa**2);
+            const beta = p_MeV / E;
+            const x_sobre_X0 = x_cm / X0_final;
+            const theta = (13.6 / (p_MeV * beta)) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+
+            // Mostrar resultados [cite: 208, 213]
+            document.getElementById('theta-resultado').textContent = (theta * 1000).toFixed(3);
+            document.getElementById('resultados').style.display = 'block';
+            
+            const interp = document.getElementById('interpretacion');
+            if (porc > 0.02) {
+                interp.innerHTML = "⚠️ <b>Nota:</b> La dispersión aumentó debido al contaminante. Esto es detectable por los sensores del CERN.";
+            } else {
+                interp.innerHTML = "✅ <b>Nota:</b> El material se comporta como plástico virgen.";
+            }
+        }
+    </script>
 </body>
 </html>
-````markdown name=README.md
-# plastico-contaminacion
-
-Página informativa sobre clasificación de plásticos y su impacto ambiental.  
-Diseñada para publicarse con GitHub Pages en la rama `main` (root).
-
-URL esperada tras publicar: `https://tomasblanco12.github.io/plastico-contaminacion/`
