@@ -163,37 +163,46 @@
   <p>Este proyecto busca determinar la pureza de plásticos reciclados utilizando el haz de partículas de una línea de luz (Beamline), analizando cómo se desvían las partículas al atravesar el material.</p>
 
   <div class="config-box" style="position: relative;">
-    <button onclick="toggleAyuda()" style="position: absolute; top: 15px; right: 15px; width: 30px; height: 30px; border-radius: 50%; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; z-index: 5;">?</button>
+  <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px;">
+    <button onclick="toggleAyuda()" style="width: 35px; height: 35px; border-radius: 50%; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem;">?</button>
+    <button onclick="toggleFormula()" style="width: 35px; height: 35px; border-radius: 8px; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.9rem;">f(x)</button>
+  </div>
 
-    <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
-    <p>Ajusta los parámetros para observar el comportamiento físico (Fórmula de Highland).</p>
-    
-    <label>Material de la muestra:</label>
-    <select id="material">
-      <option value="HDPE">HDPE (Polietileno de Alta Densidad)</option>
-      <option value="PET">PET (Botellas de Plástico)</option>
-      <option value="PVC">PVC (Policloruro de Vinilo)</option>
-    </select>
+  <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
+  
+  <label>Material de la muestra:</label>
+  <select id="material" onchange="correrFisica()">
+    <option value="HDPE">HDPE (Polietileno - X₀: 47.5)</option>
+    <option value="PET">PET (Botellas - X₀: 28.5)</option>
+    <option value="PVC">PVC (Contaminante - X₀: 15.8)</option>
+  </select>
 
-    <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
-    <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
+  <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
+  <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
 
-    <label>Espesor de la muestra: <span id="espesor-valor">2.0</span> mm</label>
-    <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
+  <label>Espesor de la muestra: <span id="espesor-valor">2.0</span> mm</label>
+  <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
 
-    <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
+  <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
 
-    <div id="resultado-box">
-      <strong>Ángulo de Dispersión Estimado (θ):</strong><br>
-      <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
+  <div id="resultado-box">
+    <strong>Ángulo de Dispersión Estimado (θ):</strong><br>
+    <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
+  </div>
+
+  <div id="modal-formula" style="display:none; position:absolute; top:100px; right:15px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 300px;">
+    <h4 style="margin:0 0 10px 0; color: #1b5e20;">Ecuación en tiempo real</h4>
+    <div style="font-family: 'Times New Roman', serif; font-size: 1.1rem; background: #fdfdfd; padding: 10px; border: 1px solid #eee; border-radius: 5px;">
+       θ ≈ <span style="font-size: 0.9rem;">(13.6 / <b id="f-p" style="color: #c62828;">3000</b>)</span> · 
+       √(<b id="f-x">0.2</b> / <b id="f-X0" style="color: #1565c0;">47.5</b>)
     </div>
+    <p style="font-size: 0.7rem; color: #666; margin-top: 8px;">Valores: p = MeV | x = cm | X₀ = rad. length</p>
+  </div>
 
-    <div id="modal-ayuda" style="display:none; position:absolute; top:55px; right:15px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 280px; text-align: left;">
-      <h4 style="margin:0 0 10px 0; color: #1b5e20;">¿Cómo funciona?</h4>
-      <p style="font-size: 0.85rem; margin:0;">
-        Este simulador utiliza la <strong>Fórmula de Highland</strong> para calcular la desviación promedio de partículas cargadas al atravesar materia.
-        <br><br>
-        • A <strong>mayor energía</strong> (GeV), menor es la desviación.<br>
+  <div id="modal-ayuda" style="display:none; position:absolute; top:60px; right:60px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 250px;">
+    <p style="font-size: 0.85rem; margin:0;">A mayor energía, menor desviación. El PVC tiene átomos de cloro pesados que bajan la X₀ y aumentan θ.</p>
+  </div>
+</div>
         • Materiales con <strong>X₀ bajo</strong> (como el PVC) generan ángulos de dispersión más grandes.
       </p>
       <button onclick="toggleAyuda()" style="margin-top:10px; padding:5px 10px; cursor:pointer; background:#ddd; border:none; border-radius:4px;">Cerrar</button>
@@ -250,6 +259,57 @@
 </div>
 
 <script>
+  <script>
+  const MATERIALES = {
+    HDPE: { X0: 47.5 }, 
+    PET: { X0: 28.5 },  
+    PVC: { X0: 15.8 }   
+  };
+
+  function toggleAyuda() {
+    const m = document.getElementById('modal-ayuda');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function toggleFormula() {
+    const m = document.getElementById('modal-formula');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // EVENTOS PARA LOS SLIDERS
+  document.getElementById('momento').addEventListener('input', function() {
+    document.getElementById('momento-valor').innerText = this.value;
+    correrFisica(); // ESTO hace que la fórmula cambie mientras mueves el slider
+  });
+
+  document.getElementById('espesor').addEventListener('input', function() {
+    document.getElementById('espesor-valor').innerText = this.value;
+    correrFisica(); // ESTO actualiza la fórmula en vivo
+  });
+
+  function correrFisica() {
+    const p_GeV = parseFloat(document.getElementById('momento').value);
+    const p_MeV = p_GeV * 1000;
+    const espesor_mm = parseFloat(document.getElementById('espesor').value);
+    const x_cm = espesor_mm / 10;
+    const matId = document.getElementById('material').value;
+    const mat = MATERIALES[matId];
+
+    // ACTUALIZAR NÚMEROS EN EL CUADRO f(x)
+    if(document.getElementById('f-p')) {
+        document.getElementById('f-p').innerText = Math.round(p_MeV);
+        document.getElementById('f-x').innerText = x_cm.toFixed(2);
+        document.getElementById('f-X0').innerText = mat.X0;
+    }
+
+    // CÁLCULO FÍSICO
+    const x_sobre_X0 = x_cm / mat.X0;
+    const theta_rad = (13.6 / p_MeV) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+    
+    document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
+    document.getElementById('resultado-box').style.display = 'block';
+  }
+</script>
   function toggleFormula() {
     const modal = document.getElementById('modal-formula');
     modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
