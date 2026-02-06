@@ -162,62 +162,80 @@
   <h1>Introducción</h1>
   <p>Este proyecto busca determinar la pureza de plásticos reciclados utilizando el haz de partículas de una línea de luz (Beamline), analizando cómo se desvían las partículas al atravesar el material.</p>
 
-  <div class="config-box">
-    <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
-    <p>Ajusta los parámetros para observar el comportamiento físico (Fórmula de Highland).</p>
-    
-     <label>Material de la muestra:</label
-    <select id="material">
-      <option value="HDPE">HDPE (Polietileno de Alta Densidad)</option>
-      <option value="PET">PET (Botellas de Plástico)</option>
-      <option value="PVC">PVC (Policloruro de Vinilo)</option>
+<div class="config-box" style="position: relative;">
+  <button onclick="toggleAyuda()" style="position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: #1b5e20; color: white; border: none; cursor: pointer;">?</button>
+
+  <h2>🔬 Módulo 1: Simulador de Dispersión</h2>
+
+  <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c8e6c9;">
+    <label style="margin:0; color: #2e7d32;">⚡ Cargar configuración rápida:</label>
+    <select id="presets" onchange="aplicarPreset(this.value)" style="margin-top: 8px;">
+      <option value="">-- Selecciona un escenario --</option>
+      <option value="bajo">Energía Baja (Haz suave - 1.5 GeV)</option>
+      <option value="medio">Energía Media (Estándar - 3.5 GeV)</option>
+      <option value="alto">Energía Alta (Haz fuerte - 6.0 GeV)</option>
     </select>
-    
-    <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
-    <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
+  </div>
+  
+  <label>Energía del haz: <span id="momento-valor">3.0</span> GeV</label>
+  <input type="range" id="momento" min="1" max="6" step="0.1" value="3.0">
 
-    <label>Espesor de la muestra: <span id="espesor-valor">2.0</span> mm</label>
-    <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
+  <label>Material de la muestra:</label>
+  <select id="material">
+    <option value="HDPE">HDPE (Polietileno)</option>
+    <option value="PET">PET (Botellas)</option>
+    <option value="PVC">PVC (Cloruro de Vinilo)</option>
+  </select>
 
-    <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
+  <label>Espesor: <span id="espesor-valor">2.0</span> mm</label>
+  <input type="range" id="espesor" min="0.5" max="5" step="0.1" value="2.0">
 
-    <div id="resultado-box">
-      <strong>Ángulo de Dispersión Estimado (θ):</strong><br>
-      <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
-    </div>
+  <button class="btn-simular" onclick="correrFisica()">▶ EJECUTAR SIMULACIÓN</button>
+
+  <div id="resultado-box">
+    <strong>Ángulo de Dispersión (θ):</strong><br>
+    <span id="theta-val" style="font-size: 2.2rem; color: #1b5e20; font-weight:bold;">0.00</span> mrad
   </div>
 
-  <h2>Filtrar Plásticos por Impacto Ambiental</h2>
-  <div class="filtros">
-    <label for="todos">Todos</label>
-    <label for="alta">Alta</label>
-    <label for="media">Media</label>
-    <label for="baja">Baja</label>
+  <div id="modal-ayuda" style="display:none; position:absolute; top:50px; right:10px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 10px rgba(0,0,0,0.3); max-width: 250px;">
+    <h4 style="margin:0;">¿Cómo funciona?</h4>
+    <p style="font-size: 0.8rem;">La <strong>Fórmula de Highland</strong> predice la desviación. A menor energía, las partículas se dispersan más[cite: 1, 89].</p>
+    <button onclick="toggleAyuda()" style="padding:4px 8px;">Cerrar</button>
   </div>
-
-  <div class="plastico alta">
-    <h3>PET (1) – Polietileno tereftalato</h3>
-    <p><strong>Uso:</strong> Botellas y envases. <strong>Degradación:</strong> ~450 años.</p>
-  </div>
-
-  <div class="plastico media">
-    <h3>HDPE (2) – Polietileno de alta densidad</h3>
-    <p><strong>Uso:</strong> Envases químicos. <strong>Degradación:</strong> ~100–200 años.</p>
-  </div>
-
-  <div class="plastico alta">
-    <h3>PVC (3) – Policloruro de vinilo</h3>
-    <p><strong>Uso:</strong> Construcción. Libera compuestos tóxicos al degradarse.</p>
-  </div>
-
-  <div class="plastico baja">
-    <h3>PP (5) – Polipropileno</h3>
-    <p><strong>Uso:</strong> Tapas y envases reutilizables. Menor impacto relativo.</p>
-  </div>
-
 </div>
 
 <script>
+  // Función para que el menú desplegable de presets funcione
+  function aplicarPreset(valor) {
+    if (!valor) return;
+    
+    const sliderE = document.getElementById('momento');
+    const txtE = document.getElementById('momento-valor');
+
+    if (valor === 'bajo') { sliderE.value = 1.5; }
+    else if (valor === 'medio') { sliderE.value = 3.5; }
+    else if (valor === 'alto') { sliderE.value = 6.0; }
+
+    txtE.innerText = sliderE.value;
+    correrFisica(); // Ejecuta la simulación automáticamente al cambiar el preset
+  }
+
+  // Mantener los listeners para que los sliders manuales sigan funcionando
+  document.getElementById('momento').addEventListener('input', function() {
+    document.getElementById('momento-valor').innerText = this.value;
+  });
+
+  document.getElementById('espesor').addEventListener('input', function() {
+    document.getElementById('espesor-valor').innerText = this.value;
+  });
+
+  function toggleAyuda() {
+    const m = document.getElementById('modal-ayuda');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // Aquí sigue tu función correrFisica() con la fórmula de Highland...
+</script>
   // Constantes de radiación (X0) del documento BL4S
   const MATERIALES = {
     HDPE: { X0: 47.5 }, 
