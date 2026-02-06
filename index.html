@@ -175,7 +175,30 @@ de nuevas estrategias de mitigación, reciclaje avanzado y sustitución por mate
         resultadoDiv.style.display = 'block';
     }
 </script>
+<script>
+  const MATERIALES = {
+    HDPE: { X0: 47.5 }, // [cite: 138]
+    PET: { X0: 28.5 },  // [cite: 139]
+    PVC: { X0: 15.8 }   // [cite: 140]
+  };
 
+  document.getElementById('e-input').addEventListener('input', (e) => {
+    document.getElementById('val-e').innerText = e.target.value;
+  });
+
+  function correrFisica() {
+    const p = parseFloat(document.getElementById('e-input').value) * 1000; // GeV a MeV [cite: 143]
+    const material = MATERIALES[document.getElementById('mat-input').value];
+    const x_cm = 0.2; // Espesor de 2mm [cite: 144]
+    
+    // Aplicando Fórmula de Highland [cite: 147]
+    const x_sobre_X0 = x_cm / material.X0;
+    const theta_rad = (13.6 / p) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+    
+    document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
+    document.getElementById('resultado-box').style.display = 'block';
+  }
+</script>
 </body>
 </html>
 ````markdown name=README.md
