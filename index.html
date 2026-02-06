@@ -199,6 +199,26 @@
       <button onclick="toggleAyuda()" style="margin-top:10px; padding:5px 10px; cursor:pointer; background:#ddd; border:none; border-radius:4px;">Cerrar</button>
     </div>
   </div>
+  <button onclick="toggleFormula()" style="position: absolute; top: 15px; right: 55px; width: 40px; height: 30px; border-radius: 5px; background: #1b5e20; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.9rem; z-index: 5;">f(x)</button>
+
+<div id="modal-formula" style="display:none; position:absolute; top:55px; right:15px; background:white; border:2px solid #1b5e20; padding:15px; border-radius:10px; z-index:100; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 320px; text-align: center;">
+  <h4 style="margin:0 0 10px 0; color: #1b5e20;">Ecuación de Highland</h4>
+  <div style="font-family: 'Times New Roman', serif; font-size: 1.2rem; background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px inset #ddd;">
+    θ = <div style="display: inline-block; vertical-align: middle; text-align: center;">
+          <span style="border-bottom: 1px solid black;">13.6 MeV</span><br>
+          <span id="f-p" style="color: #c62828; font-weight: bold;">3000</span>
+        </div> 
+    · √<div style="display: inline-block; vertical-align: middle; text-align: center;">
+          <span style="border-bottom: 1px solid black;" id="f-x">0.2</span><br>
+          <span id="f-X0" style="color: #1565c0; font-weight: bold;">47.5</span>
+        </div>
+    · [1 + 0.038 ln(<span id="f-log">...</span>)]
+  </div>
+  <p style="font-size: 0.75rem; color: #555; margin-top: 10px;">
+    Leyenda: <span style="color: #c62828;">Momento (p)</span> | <span style="color: #1565c0;">Rad. Length (X₀)</span>
+  </p>
+  <button onclick="toggleFormula()" style="margin-top:10px; padding:5px 10px; cursor:pointer;">Cerrar</button>
+</div>
   <h2>Filtrar Plásticos por Impacto Ambiental</h2>
   <div class="filtros">
     <label for="todos">Todos</label>
