@@ -175,17 +175,38 @@
     el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
   }
 
-  // Escuchadores de Sliders (Actualización en vivo)
+  // Esta función SOLO actualiza los numeritos de la fórmula y el índice mientras mueves los sliders
+  function actualizarPrevia() {
+    const p_MeV = parseFloat(document.getElementById('momento').value) * 1000;
+    const x_cm = parseFloat(document.getElementById('espesor').value) / 10;
+    const matId = document.getElementById('material').value;
+    const mat = MATERIALES[matId];
+
+    // Actualizamos la fórmula visual y el índice (pero NO el resultado final)
+    document.getElementById('f-p').innerText = Math.round(p_MeV);
+    document.getElementById('f-x').innerText = x_cm.toFixed(2);
+    document.getElementById('f-X0').innerText = mat.X0;
+
+    document.getElementById('idx-p').innerText = Math.round(p_MeV);
+    document.getElementById('idx-x').innerText = x_cm.toFixed(2);
+    document.getElementById('idx-X0').innerText = mat.X0;
+    
+    // Opcional: Podrías poner el índice del resultado en "?" hasta que se pulse el botón
+    document.getElementById('idx-res').innerText = "---";
+  }
+
+  // Escuchadores de Sliders: Ahora solo actualizan la "previa"
   document.getElementById('momento').addEventListener('input', function() {
     document.getElementById('momento-valor').innerText = this.value;
-    correrFisica();
+    actualizarPrevia();
   });
 
   document.getElementById('espesor').addEventListener('input', function() {
     document.getElementById('espesor-valor').innerText = this.value;
-    correrFisica();
+    actualizarPrevia();
   });
 
+  // ESTA ES LA QUE SE ACTIVA AL TOCAR EL BOTÓN
   function correrFisica() {
     const p_GeV = parseFloat(document.getElementById('momento').value);
     const p_MeV = p_GeV * 1000;
@@ -194,27 +215,22 @@
     const matId = document.getElementById('material').value;
     const mat = MATERIALES[matId];
 
-    // Fórmula de Highland
+    // Cálculo real de Highland
     const x_sobre_X0 = x_cm / mat.X0;
     const theta_rad = (13.6 / p_MeV) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
     const theta_mrad = (theta_rad * 1000).toFixed(3);
 
-    // Actualizar Cuadro f(x) e Índice
-    document.getElementById('f-p').innerText = Math.round(p_MeV);
-    document.getElementById('f-x').innerText = x_cm.toFixed(2);
-    document.getElementById('f-X0').innerText = mat.X0;
-    document.getElementById('idx-p').innerText = Math.round(p_MeV);
-    document.getElementById('idx-x').innerText = x_cm.toFixed(2);
-    document.getElementById('idx-X0').innerText = mat.X0;
-    document.getElementById('idx-res').innerText = theta_mrad;
-    
-    // Resultado visual
+    // Mostramos el resultado final
     document.getElementById('theta-val').innerText = theta_mrad;
+    document.getElementById('idx-res').innerText = theta_mrad;
     document.getElementById('resultado-box').style.display = 'block';
   }
 
-  // Inicializar al cargar
-  window.onload = correrFisica;
+  // Al cargar, que se prepare la fórmula pero que no se vea el resultado
+  window.onload = function() {
+    actualizarPrevia();
+    document.getElementById('resultado-box').style.display = 'none';
+  };
 </script>
 
 </body>
