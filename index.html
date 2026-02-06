@@ -170,25 +170,27 @@
     PVC: { X0: 15.8 }   
   };
 
+  // Esta variable controla si ya se hizo click en simular al menos una vez
+  let simulacionRealizada = false;
+
   function toggleElemento(id) {
     const el = document.getElementById(id);
     if(el) el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
   }
 
-  // Se activa al mover sliders o cambiar material
   function detectarCambios() {
     // 1. Actualizamos los números en la interfaz principal (etiquetas de los sliders)
     document.getElementById('momento-valor').innerText = document.getElementById('momento').value;
     document.getElementById('espesor-valor').innerText = document.getElementById('espesor').value;
     
-    // 2. Cambiamos el texto del botón pero SIN cambiar el color (se queda verde)
-    const btn = document.querySelector('.btn-simular');
-    btn.innerHTML = "🔄 RECALCULAR SIMULACIÓN";
+    // 2. Solo cambiamos el texto del botón si ya hubo una simulación previa
+    if (simulacionRealizada) {
+      const btn = document.querySelector('.btn-simular');
+      btn.innerHTML = "🔄 RECALCULAR SIMULACIÓN";
+      document.getElementById('idx-res').innerText = "---";
+    }
     
-    // 3. Marcamos el índice del resultado en la fórmula como pendiente
-    document.getElementById('idx-res').innerText = "---";
-    
-    // 4. Actualizamos los números dentro de la fórmula f(x)
+    // 3. Siempre actualizamos la fórmula visual
     actualizarFormula();
   }
 
@@ -198,23 +200,19 @@
     const matId = document.getElementById('material').value;
     const mat = MATERIALES[matId];
 
-    // Actualizar números en el modal de la fórmula
     document.getElementById('f-p').innerText = Math.round(p_MeV);
     document.getElementById('f-x').innerText = x_cm.toFixed(2);
     document.getElementById('f-X0').innerText = mat.X0;
 
-    // Actualizar el mini índice de la fórmula
     document.getElementById('idx-p').innerText = Math.round(p_MeV);
     document.getElementById('idx-x').innerText = x_cm.toFixed(2);
     document.getElementById('idx-X0').innerText = mat.X0;
   }
 
-  // Listeners vinculados a la detección de cambios
   document.getElementById('momento').addEventListener('input', detectarCambios);
   document.getElementById('espesor').addEventListener('input', detectarCambios);
   document.getElementById('material').addEventListener('change', detectarCambios);
 
-  // Ejecución manual al pulsar el botón
   function correrFisica() {
     const p_GeV = parseFloat(document.getElementById('momento').value);
     const p_MeV = p_GeV * 1000;
@@ -227,11 +225,13 @@
     const theta_rad = (13.6 / p_MeV) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
     const theta_mrad = (theta_rad * 1000).toFixed(3);
 
-    // Mostramos el nuevo resultado
+    // Actualizamos el resultado y activamos la bandera de simulación realizada
     document.getElementById('theta-val').innerText = theta_mrad;
     document.getElementById('idx-res').innerText = theta_mrad;
     document.getElementById('resultado-box').style.display = 'block';
     
+    simulacionRealizada = true;
+
     // Restauramos el texto original del botón
     const btn = document.querySelector('.btn-simular');
     btn.innerHTML = "▶ EJECUTAR SIMULACIÓN";
@@ -239,7 +239,6 @@
 
   window.onload = function() {
     actualizarFormula();
-    // Aseguramos que el resultado esté oculto solo al inicio
     document.getElementById('resultado-box').style.display = 'none';
   };
 </script>
