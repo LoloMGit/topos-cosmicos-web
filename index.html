@@ -250,6 +250,35 @@
 </div>
 
 <script>
+  function toggleFormula() {
+    const modal = document.getElementById('modal-formula');
+    modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+}
+
+function correrFisica() {
+    const p_GeV = parseFloat(document.getElementById('momento').value);
+    const p_MeV = p_GeV * 1000;
+    const espesor_mm = parseFloat(document.getElementById('espesor').value);
+    const x_cm = espesor_mm / 10;
+    const mat = MATERIALES[document.getElementById('material').value];
+    
+    const m = 0.511;
+    const E = Math.sqrt(Math.pow(p_MeV, 2) + Math.pow(m, 2));
+    const beta = p_MeV / E;
+    const x_sobre_X0 = x_cm / mat.X0;
+    
+    // --- ACTUALIZACIÓN DE LA FÓRMULA VISUAL ---
+    document.getElementById('f-p').innerText = Math.round(p_MeV) + " MeV";
+    document.getElementById('f-x').innerText = x_cm.toFixed(2);
+    document.getElementById('f-X0').innerText = mat.X0;
+    document.getElementById('f-log').innerText = x_sobre_X0.toFixed(4);
+    // ------------------------------------------
+
+    const theta_rad = (13.6 / (p_MeV * beta)) * Math.sqrt(x_sobre_X0) * (1 + 0.038 * Math.log(x_sobre_X0));
+    
+    document.getElementById('theta-val').innerText = (theta_rad * 1000).toFixed(3);
+    document.getElementById('resultado-box').style.display = 'block';
+}
   // Función para mostrar/ocultar el cuadro de ayuda
   function toggleAyuda() {
     const modal = document.getElementById('modal-ayuda');
